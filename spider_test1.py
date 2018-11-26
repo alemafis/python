@@ -29,3 +29,5 @@ for i in html_list:
                 img_name = str(cnt) + '.' + img_tp
                 urllib.request.urlretrieve(img_url, '{}{}'.format(paths, img_name))
                 cnt = cnt + 1
+
+print ('hello')
