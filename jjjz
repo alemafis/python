@@ -1,0 +1,72 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import requests
+import json
+from bs4 import BeautifulSoup 
+import os
+
+
+
+def wt_text(file, data):
+	dirname = os.path.dirname(file)
+	filename = os.path.basename(file)
+	
+	if dirname == '':
+		dirname = os.path.getcwd()
+	if 	os.path.exists(dirname) != True:
+		os.makedirs(dirname)
+
+	file = dirname+'\\'+filename
+	file_object = open(file,'w')
+	file_object.write(str(data))
+	file_object.close()
+
+
+def get_response(url,fundcode):
+	
+	para = {'callback':'jQuery18302900370236253933_1542769023972',
+		'fundCode':FundCode,
+		'pageIndex':'1',
+		'pageSize':'50',
+		'startDate':'2018-11-01',
+		'endDate':'2018-11-20',
+		'_':'1542769024206'}
+
+	Header = {
+			'Accept': '*/*',
+			'Accept-Encoding': 'gzip, deflate',
+			'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7,ja;q=0.6',
+			'Connection': 'keep-alive',
+			'Cookie': 'st_pvi=93139425809603; st_si=81131832921324; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; EMFUND5=null; EMFUND6=null; EMFUND7=null; EMFUND8=null; EMFUND0=null; EMFUND9=11-21 10:56:29@#$%u666F%u987A%u957F%u57CE%u6CAA%u6DF1300%u589E%u5F3A@%23%24000311',
+			'Host': 'api.fund.eastmoney.com',
+			'Referer': 'http://fundf10.eastmoney.com/jjjz_000311.html',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36'
+		}
+
+	response = requests.get(url,params=para,headers=Header)
+
+	return response
+
+def get_data(response):
+	response = response.text
+	Fund_Dict = json.loads(response.split('(')[1].split(')')[0])
+	Fund_list = Fund_Dict['Data']['LSJZList']
+	data_list = []
+
+#	for i in Fund_list:
+#		argus = [i['FSRQ'],i['DWJZ'],i['LJJZ'],i['JZZZL']]
+#		data_list.append(argus)
+#	return data_list
+	return Fund_list
+if __name__ == '__main__':
+	
+	FundCode = '000311'
+	filename = 'C:\\Users\\jack\\Documents\\wasd.json'
+	url = 'http://api.fund.eastmoney.com/f10/lsjz'
+
+	response=get_response(url,FundCode)
+	data=get_data(response)
+	data_json = json.dumps(data,ensure_ascii=False)
+	print (data_json)
+	wt_text(filename,data)
+
